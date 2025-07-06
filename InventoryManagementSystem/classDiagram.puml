@@ -1,0 +1,18 @@
+@startuml AddProductSequence
+
+actor User
+participant Main
+participant InventoryService
+participant FileInventoryRepository
+participant Product
+
+User -> Main : addProduct()
+Main -> InventoryService : addProduct(product)
+InventoryService -> FileInventoryRepository : save(product)
+FileInventoryRepository -> Product : new(id,name,price,qty)
+FileInventoryRepository -> Product : put(id,product)
+InventoryService <-- FileInventoryRepository
+Main <-- InventoryService
+User <-- Main : Confirmation
+
+@enduml
