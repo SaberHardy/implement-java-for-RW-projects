@@ -7,6 +7,11 @@ public class BookModel {
     String bookId;
     String bookAuthor;
     Date bookBorrowedDay;
+
+    public void setBookQuantity(int bookQuantity) {
+        this.bookQuantity = bookQuantity;
+    }
+
     int bookQuantity;
 
     public BookModel(String bookName, String bookId, String bookAuthor, Date bookBorrowedDay, int bookQuantity) {
@@ -41,12 +46,16 @@ public class BookModel {
         return bookBorrowedDay;
     }
 
-    public int getBookQuantity(int bookQuantity) {
+    public int getBookQuantity() {
         if (bookQuantity < 0) {
             throw new IllegalArgumentException("The quantity should be greater than Zero!");
         } else {
             return bookQuantity;
         }
+    }
+
+    public String toString() {
+        return "Name: '" + this.bookName + "', Author: '" + this.bookAuthor + "', Quantity: '" + this.bookQuantity + "'";
     }
 
     public int updateBookQuantity(int bookQuantityToTake) {
