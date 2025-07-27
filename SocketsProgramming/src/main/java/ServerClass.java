@@ -9,29 +9,42 @@ import java.net.Socket;
 
 public class ServerClass {
     public static void main(String[] args) throws IOException {
-        // 1. Create server socket with prot 8000
         ServerSocket serverSocket = new ServerSocket(8000);
-        System.out.println("Server Started....");
+        System.out.println("Server started. waiting for client...");
 
-        // 2. Accept client connection
         Socket clientSocket = serverSocket.accept();
-        System.out.println("Connection Accepted...");
+        System.out.println("Client connected...");
 
-        // 3. Get inputs/outputs streams
-        BufferedReader in = new BufferedReader(
-                new InputStreamReader(clientSocket.getInputStream())
-        );
-        PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+        new Thread(() -> handleClientInput(clientSocket)).start();
+        new Thread(() -> handleServerOutput(clientSocket)).start();
+    }
 
-        // 4. Read client message
-        String clientMessage = in.readLine();
-        System.out.println("Client: " + clientMessage);
+    public static void handleClientInput(Socket socket) {
+        try (BufferedReader in = new BufferedReader(
+                new InputStreamReader(socket.getInputStream()))) {
+            String clientMessage;
+            while ((clientMessage = in.readLine()) != null) {
+                System.out.println("Client: " + clientMessage);
+                if ("exit".equalsIgnoreCase(clientMessage)) break;
+            }
+        } catch (IOException e) {
+            System.out.println("Client disconnected...");
+        }
+    }
 
-        // 5. Send Message
-        out.println("Hello From server...!");
+    public static void handleServerOutput(Socket socket) {
+        try (PrintWriter out = new PrintWriter(socket.getOutputStream(), true)) {
+            BufferedReader consoleIn = new BufferedReader(new InputStreamReader(System.in));
 
-        // 6. Close connection
-        clientSocket.close();
-        serverSocket.close();
+            String serverMessage;
+
+            while ((serverMessage = consoleIn.readLine()) != null) {
+                out.println(serverMessage);
+                if ("exit".equalsIgnoreCase(serverMessage)) break;
+            }
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
